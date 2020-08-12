@@ -92,7 +92,10 @@ class HashTable:
         if current is None:
             self.hash_table[index] = new_entry
             self.entries += 1
-    
+
+            if self.get_load_factor() > 0.7:
+                self.resize(self.capacity * 2)
+
         else:
             while current is not None:
                 # Overwrites if key currently exists
@@ -100,9 +103,12 @@ class HashTable:
                     current.value = value
                     return
                 prev = current  # keeps a reference to the previous current entry
-                current = current.next # will end up becoming None eventually
+                current = current.next  # will end up becoming None eventually
             prev.next = new_entry
             self.entries += 1
+
+            if self.get_load_factor() > 0.7:
+                self.resize(int(self.capacity * 2))
 
     def delete(self, key):
         """
@@ -126,12 +132,15 @@ class HashTable:
         elif current.key is key:
             current.value = None
             current = None
+            self.entries -= 1
+
         else:
             while current.next:
                 current = current.next
                 if current.key is key:
                     current.value = None
                     current.next = None
+                    self.entries -= 1
 
     def get(self, key):
         """
@@ -170,16 +179,18 @@ class HashTable:
 
         Implement this.
         """
-        new_table = HashTable(
-            new_capacity)  # creates a new hashtable of new capacity length
+        if new_capacity < 8:
+            new_capacity = 8
+        # creates a new hashtable of new capacity length
+        new_table = HashTable(new_capacity)
         for entry in self.hash_table:
             if entry:  # handles initial "head" entry
                 new_table.put(entry.key, entry.value)
-            if entry.next:
-                current = entry
-                while current.next:
-                    current = current.next
-                    new_table.put(current.key, current.value)
+                if entry.next:
+                    current = entry
+                    while current.next:
+                        current = current.next
+                        new_table.put(current.key, current.value)
         self.hash_table = new_table.hash_table
         self.capacity = new_table.capacity
 
@@ -201,9 +212,6 @@ if __name__ == "__main__":
     ht.put("line_12", "And stood awhile in thought.")
 
     print("")
-
-    for entry in ht.hash_table:
-        print(entry.value)
 
     # Test storing beyond capacity
     for i in range(1, 13):
