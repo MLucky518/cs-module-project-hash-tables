@@ -2,28 +2,25 @@ import math
 import random
 
 
-# def slowfun_too_slow(x, y):
-#     v = math.pow(x, y)
-#     v = math.factorial(v)
-#     v //= (x + y)
-#     v %= 982451653
+def slowfun_too_slow(x, y):
+    v = math.pow(x, y)
+    v = math.factorial(v)
+    v //= (x + y)
+    v %= 982451653
 
-#     return v
+    return v
+
 
 table = {}
+ 
+
 def slowfun(x, y):
-    
-    if (x,y) not in table:
-        v = math.pow(x, y)
-        v = math.factorial(v)
-        v //= (x + y)
-        v %= 982451653
-        table[(x,y)] = v
 
-    
-    
+    if (x, y) not in table:
 
-    return table[(x,y)]
+        table[(x, y)] = slowfun_too_slow(x, y)
+
+    return table[(x, y)]
 
 
 # Do not modify below this line!
